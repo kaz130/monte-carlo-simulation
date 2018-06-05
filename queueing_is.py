@@ -10,6 +10,7 @@ sim_time = 100000
 np.random.seed(seed = 0)
 
 def simulation(arrive_rate, service_rate):
+    system_max = 500
     queue_length = 0
     lb = arrive_rate / (arrive_rate + service_rate)
     path = np.empty(sim_time)
@@ -19,6 +20,8 @@ def simulation(arrive_rate, service_rate):
         u = np.random.random()
         if u <= lb:
             queue_length += 1
+            if queue_length > system_max:
+                queue_length = 0
         else:
             queue_length = max(queue_length - 1, 0)
         path[t] = queue_length
@@ -107,11 +110,11 @@ def path_probability(path, arrive_rate, service_rate):
     return p
 
 if __name__ == '__main__':
-    arrive_rate = 0.1
-    service_rate = 0.9
-    arrive_rate2 = 0.4
-    service_rate2 = 0.6
-    n = 5
+    arrive_rate = 0.5
+    service_rate = 1.0
+    arrive_rate2 = 1.0
+    service_rate2 = 0.5
+    n = 10
     path = simulation(arrive_rate, service_rate)
     print(estimation(path, n))
     path = simulation(arrive_rate2, service_rate2)
