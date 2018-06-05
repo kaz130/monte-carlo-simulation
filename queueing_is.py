@@ -2,6 +2,7 @@
 
 import math
 import time
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -10,7 +11,7 @@ sim_time = 100000
 np.random.seed(seed = 0)
 
 def simulation(arrive_rate, service_rate, reset=False):
-    reset_interval = 500
+    reset_interval = 1000
     queue_length = 0
     lb = arrive_rate / (arrive_rate + service_rate)
     path = np.empty(sim_time)
@@ -49,7 +50,6 @@ def calc_cycle(path):
     start_time.pop()
     stop_time.pop()
     return start_time, stop_time
-
 
 def estimation(path, n):
     start_time, stop_time = calc_cycle(path)
@@ -104,24 +104,33 @@ def path_probability(path, arrive_rate, service_rate):
     return p
 
 if __name__ == '__main__':
+    queue_n = 30
     arrive_rate = 0.5
     service_rate = 1.0
     arrive_rate2 = 1.0
     service_rate2 = 0.5
-    n = 10
-    path = simulation(arrive_rate, service_rate)
-    print(estimation(path, n))
-    path = simulation(arrive_rate2, service_rate2, reset=True)
-    print(is_estimation(path, n, arrive_rate, service_rate, arrive_rate2, service_rate2))
-    plt.plot(path, linewidth=1)
-    plt.show()
 
-    # theory_pn = []
-    theory_p = 1
-    rho = arrive_rate / service_rate
-    for n in range(n):
-        # theory_pn.append(rho**n * (1-rho))
-        theory_p -= rho**n * (1-rho)
+    pth = []
+    pmc = []
+    pis = []
 
-    print(theory_p)
+    path_mc = simulation(arrive_rate, service_rate)
+    path_is = simulation(arrive_rate2, service_rate2, reset=True)
+    for n in range(0, queue_n + 1):
+        p = 1
+        rho = arrive_rate / service_rate
+        for m in range(n):
+            p -= rho**m * (1-rho)
+        pth.append(p)
+
+        pmc.append(estimation(path_mc, n))
+        pis.append(is_estimation(path_is, n, arrive_rate, service_rate, arrive_rate2, service_rate2))
+
+        print([n, pth[n], pmc[n], pis[n]])
+
+
+    # with open('result.csv', 'w', newline='') as f:
+    #     writer = csv.writer(f, delimiter=',')
+    #     for n in range(len(pth)):
+    #         writer.writerow([n, pth[n], pmc[n], pis[n]])
 
