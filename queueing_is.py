@@ -5,18 +5,17 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-N = 1000000
-# N = 10
+sim_time = 100000
 
 np.random.seed(seed = 0)
 
 def simulation(arrive_rate, service_rate):
     queue_length = 0
     lb = arrive_rate / (arrive_rate + service_rate)
-    path = np.empty(N)
+    path = np.empty(sim_time)
     path[0] = 0
 
-    for t in range(1, N):
+    for t in range(1, sim_time):
         u = np.random.random()
         if u <= lb:
             queue_length += 1
