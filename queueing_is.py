@@ -65,13 +65,14 @@ def estimation(path, n):
 
     return pmc
 
-def is_estimation(path, n, arrive_rate, service_rate, arrive_rate2, service_rate2):
+def is_estimation(path, n, arrive_rate, service_rate,
+                  arrive_rate2, service_rate2):
     start_time, stop_time = calc_cycle(path)
     l = 0
     for k in range(len(stop_time)):
         for t in range(start_time[k], stop_time[k]):
-            l += path_probability(path[start_time[k]:t+2], arrive_rate, service_rate) \
-                    / path_probability(path[start_time[k]:t+2], arrive_rate2, service_rate2)
+            l += (path_probability(path[start_time[k]:t+2], arrive_rate, service_rate)
+                    / path_probability(path[start_time[k]:t+2], arrive_rate2, service_rate2))
 
     l /= len(stop_time)
 
@@ -79,8 +80,8 @@ def is_estimation(path, n, arrive_rate, service_rate, arrive_rate2, service_rate
     for k in range(len(stop_time)):
         for t in range(start_time[k], stop_time[k]):
             if path[t] > n:
-                pis += 1 * path_probability(path[start_time[k]:t+2], arrive_rate, service_rate) \
-                / path_probability(path[start_time[k]:t+2], arrive_rate2, service_rate2)
+                pis += (path_probability(path[start_time[k]:t+2], arrive_rate, service_rate)
+                        / path_probability(path[start_time[k]:t+2], arrive_rate2, service_rate2))
     pis /= len(stop_time) * l
 
     return pis
