@@ -28,10 +28,9 @@ def simulation(arrive_rate, service_rate):
 
     return path
 
-def estimation(path, n):
+def calc_cycle(path):
     start_time = []
     stop_time = []
-    number_of_cycles = 0
 
     t = 0
     while t < len(path):
@@ -45,6 +44,11 @@ def estimation(path, n):
             t += 1
         stop_time.append(t)
 
+    return start_time, stop_time
+
+
+def estimation(path, n):
+    start_time, stop_time = calc_cycle(path)
     l = 0
     for k in range(len(stop_time)):
         l += stop_time[k] - start_time[k]
@@ -60,22 +64,7 @@ def estimation(path, n):
     return pmc
 
 def is_estimation(path, n, arrive_rate, service_rate, arrive_rate2, service_rate2):
-    start_time = []
-    stop_time = []
-    number_of_cycles = 0
-
-    t = 0
-    while t < len(path):
-        # サイクルが始まるまでループ
-        while t < len(path) and path[t] == 0:
-            t += 1
-        start_time.append(t)
-
-        # サイクルが終わるまでループ
-        while t < len(path) and path[t] > 0:
-            t += 1
-        stop_time.append(t)
-
+    start_time, stop_time = calc_cycle(path)
     l = 0
     for k in range(len(stop_time)):
         for t in range(start_time[k], stop_time[k]):
