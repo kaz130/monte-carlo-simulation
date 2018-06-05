@@ -9,8 +9,8 @@ sim_time = 100000
 
 np.random.seed(seed = 0)
 
-def simulation(arrive_rate, service_rate):
-    system_max = 500
+def simulation(arrive_rate, service_rate, reset=False):
+    reset_interval = 500
     queue_length = 0
     lb = arrive_rate / (arrive_rate + service_rate)
     path = np.empty(sim_time)
@@ -20,10 +20,12 @@ def simulation(arrive_rate, service_rate):
         u = np.random.random()
         if u <= lb:
             queue_length += 1
-            if queue_length > system_max:
-                queue_length = 0
         else:
             queue_length = max(queue_length - 1, 0)
+
+        if reset and t%reset_interval == 0:
+            queue_length = 0
+
         path[t] = queue_length
 
     return path
@@ -109,7 +111,7 @@ if __name__ == '__main__':
     n = 10
     path = simulation(arrive_rate, service_rate)
     print(estimation(path, n))
-    path = simulation(arrive_rate2, service_rate2)
+    path = simulation(arrive_rate2, service_rate2, reset=True)
     print(is_estimation(path, n, arrive_rate, service_rate, arrive_rate2, service_rate2))
     plt.plot(path, linewidth=1)
     plt.show()
