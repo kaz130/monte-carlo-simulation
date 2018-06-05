@@ -44,6 +44,8 @@ def calc_cycle(path):
             t += 1
         stop_time.append(t)
 
+    start_time.pop()
+    stop_time.pop()
     return start_time, stop_time
 
 
