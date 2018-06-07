@@ -10,8 +10,7 @@ sim_time = 100000
 
 np.random.seed(seed = 0)
 
-def simulation(arrive_rate, service_rate, reset=False):
-    reset_interval = 1000
+def simulation(arrive_rate, service_rate, reset_interval=None):
     queue_length = 0
     lb = arrive_rate / (arrive_rate + service_rate)
     path = np.empty(sim_time)
@@ -24,7 +23,7 @@ def simulation(arrive_rate, service_rate, reset=False):
         else:
             queue_length = max(queue_length - 1, 0)
 
-        if reset and t%reset_interval == 0:
+        if reset_interval is not None and t%reset_interval == 0:
             queue_length = 0
 
         path[t] = queue_length
@@ -115,7 +114,7 @@ if __name__ == '__main__':
     pis = []
 
     path_mc = simulation(arrive_rate, service_rate)
-    path_is = simulation(arrive_rate2, service_rate2, reset=True)
+    path_is = simulation(arrive_rate2, service_rate2, reset_interval=1000)
     for n in range(0, queue_n + 1):
         p = 1
         rho = arrive_rate / service_rate
