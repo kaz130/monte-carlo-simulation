@@ -128,9 +128,8 @@ if __name__ == '__main__':
 
         print("{0:<2}, {1:<.10f}, {2:<.10f}, {3:<.10f}".format(n, pth[n], pmc[n], pis[n]))
 
-
-    # with open('result.csv', 'w', newline='') as f:
-    #     writer = csv.writer(f, delimiter=',')
-    #     for n in range(len(pth)):
-    #         writer.writerow([n, pth[n], pmc[n], pis[n]])
+    with open('result.csv', 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=',')
+        for n in range(len(pth)):
+            writer.writerow([n, pth[n], pmc[n], pis[n]])
 
