@@ -71,36 +71,37 @@ def is_estimation(path, n, arrive_rate, service_rate,
     start_time, stop_time = calc_cycle(path)
     l = 0
     for k in range(len(stop_time)):
-        for t in range(start_time[k], stop_time[k]):
-            l += (path_probability(path[start_time[k]:t+2], arrive_rate, service_rate)
-                    / path_probability(path[start_time[k]:t+2], arrive_rate2, service_rate2))
+        probability0 = arrive_rate
+        probability_is = arrive_rate2
+        for t in range(start_time[k]+1, stop_time[k]+1):
+            if path[t] > path[t-1]:
+                probability0 *= arrive_rate
+                probability_is *= arrive_rate2
+            else:
+                probability0 *= service_rate
+                probability_is *= service_rate2
+
+            l += probability0 / probability_is
 
     l /= len(stop_time)
 
     pis = 0
     for k in range(len(stop_time)):
-        for t in range(start_time[k], stop_time[k]):
-            if path[t] > n:
-                pis += (path_probability(path[start_time[k]:t+2], arrive_rate, service_rate)
-                        / path_probability(path[start_time[k]:t+2], arrive_rate2, service_rate2))
+        probability0 = arrive_rate
+        probability_is = arrive_rate2
+        for t in range(start_time[k]+1, stop_time[k]+1):
+            if path[t] > path[t-1]:
+                probability0 *= arrive_rate
+                probability_is *= arrive_rate2
+            else:
+                probability0 *= service_rate
+                probability_is *= service_rate2
+            if path[t-1] > n:
+                pis += probability0 / probability_is
+
     pis /= len(stop_time) * l
 
     return pis
-
-def path_probability(path, arrive_rate, service_rate):
-    # 系内数が増加m+1
-    # p = arrive_rate / (arrive_rate + service_rate)
-    p = arrive_rate
-    for t in range(1, len(path)):
-        # 系内数が増加
-        if (path[t] - path[t-1] == 1):
-            # p *= arrive_rate / (arrive_rate + service_rate)
-            p *= arrive_rate
-        # 系内数が減少
-        else:
-            # p *= service_rate / (arrive_rate + service_rate)
-            p *= service_rate
-    return p
 
 if __name__ == '__main__':
     queue_n = 30
