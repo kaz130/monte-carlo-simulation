@@ -110,26 +110,32 @@ if __name__ == '__main__':
     arrive_rate2 = 1.0
     service_rate2 = 0.5
 
-    pth = []
-    pmc = []
-    pis = []
-
-    path_mc = simulation(arrive_rate, service_rate)
-    path_is = simulation(arrive_rate2, service_rate2, reset_interval=1000)
+    pth = np.empty(queue_n + 1)
+    # 理論値を計算
+    rho = arrive_rate / service_rate
     for n in range(0, queue_n + 1):
         p = 1.0
-        rho = arrive_rate / service_rate
         for m in range(n):
             p -= rho**m * (1-rho)
-        pth.append(p)
+        pth[n] = p
 
-        pmc.append(estimation(path_mc, n))
-        pis.append(is_estimation(path_is, n, arrive_rate, service_rate, arrive_rate2, service_rate2))
 
-        print("{0:<2}, {1:<.10f}, {2:<.10f}, {3:<.10f}".format(n, pth[n], pmc[n], pis[n]))
+    pmc = np.empty([30, queue_n + 1])
+    pis = np.empty([30, queue_n + 1])
+    for i in range(30):
+        path_mc = simulation(arrive_rate, service_rate)
+        path_is = simulation(arrive_rate2, service_rate2, reset_interval=1000)
+        print("{0}:".format(i))
+        for n in range(0, queue_n + 1):
+            pmc[i][n] = estimation(path_mc, n)
+            pis[i][n] = is_estimation(path_is, n, arrive_rate, service_rate,
+                                      arrive_rate2, service_rate2)
+            print("{0:<2}, {1:<.10f}, {2:<.10f}, {3:<.10f}"
+                    .format(n, pth[n], pmc[i][n], pis[i][n]))
 
     with open('result.csv', 'w', newline='') as f:
         writer = csv.writer(f, delimiter=',')
-        for n in range(len(pth)):
-            writer.writerow([n, pth[n], pmc[n], pis[n]])
+        for i in range(30):
+            for n in range(len(pth)):
+                writer.writerow([n, pth[n], pmc[i][n], pis[i][n]])
 
