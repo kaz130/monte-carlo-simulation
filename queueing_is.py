@@ -117,7 +117,7 @@ if __name__ == '__main__':
     path_mc = simulation(arrive_rate, service_rate)
     path_is = simulation(arrive_rate2, service_rate2, reset_interval=1000)
     for n in range(0, queue_n + 1):
-        p = 1
+        p = 1.0
         rho = arrive_rate / service_rate
         for m in range(n):
             p -= rho**m * (1-rho)
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         pmc.append(estimation(path_mc, n))
         pis.append(is_estimation(path_is, n, arrive_rate, service_rate, arrive_rate2, service_rate2))
 
-        print([n, pth[n], pmc[n], pis[n]])
+        print("{0:<2}, {1:<.10f}, {2:<.10f}, {3:<.10f}".format(n, pth[n], pmc[n], pis[n]))
 
 
     # with open('result.csv', 'w', newline='') as f:
