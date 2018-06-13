@@ -104,6 +104,7 @@ def is_estimation(path, n, arrive_rate, service_rate,
     return pis
 
 if __name__ == '__main__':
+    recurring_times = 30
     queue_n = 30
     arrive_rate = 0.5
     service_rate = 1.0
@@ -120,9 +121,9 @@ if __name__ == '__main__':
         pth[n] = p
 
 
-    pmc = np.empty([30, queue_n + 1])
-    pis = np.empty([30, queue_n + 1])
-    for i in range(30):
+    pmc = np.empty([recurring_times, queue_n + 1])
+    pis = np.empty([recurring_times, queue_n + 1])
+    for i in range(recurring_times):
         path_mc = simulation(arrive_rate, service_rate)
         path_is = simulation(arrive_rate2, service_rate2, reset_interval=1000)
         print("{0}:".format(i))
@@ -133,9 +134,31 @@ if __name__ == '__main__':
             print("{0:<2}, {1:<.10f}, {2:<.10f}, {3:<.10f}"
                     .format(n, pth[n], pmc[i][n], pis[i][n]))
 
-    with open('result.csv', 'w', newline='') as f:
+    pmc_ave = np.average(pmc, axis=0)
+    pis_ave = np.average(pis, axis=0)
+    pmc_var = np.var(pmc, axis=0)
+    pis_var = np.var(pis, axis=0)
+    pmc_std = np.std(pmc, axis=0)
+    pis_std = np.std(pis, axis=0)
+
+    with open('result1.csv', 'w', newline='') as f:
         writer = csv.writer(f, delimiter=',')
-        for i in range(30):
-            for n in range(len(pth)):
+        for i in range(recurring_times):
+            for n in range(queue_n + 1):
                 writer.writerow([n, pth[n], pmc[i][n], pis[i][n]])
+
+    with open('result2.csv', 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=',')
+        for n in range(queue_n + 1):
+            writer.writerow([n, pth[n],
+                pmc_ave[n], pis_ave[n],
+                pmc_var[n], pis_var[n],
+                pmc_std[n], pis_std[n]])
+
+    with open('result.txt', 'w', newline='') as f:
+        f.write("{0:>2}, {1:>12}, {2:>12}, {3:>12}, {4:>12}\n"
+                .format("n", "pmc_ave", "pis_ave", "pmc_var", "pis_var"))
+        for n in range(queue_n + 1):
+            f.write("{0:<2}, {1:12.4e}, {2:12.4e}, {3:12.4e}, {4:12.4e}\n"
+                    .format(n, pmc_ave[n], pis_ave[n], pmc_var[n], pis_var[n]))
 
